@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.job.dao.CheckGroupDao">
+    <!--&lt;!&ndash;查询所有的映射&ndash;&gt;-->
+    <!--<select id="findAll" resultType="account">-->
+    <!--select * from account-->
+    <!--</select>-->
+    <!--&lt;!&ndash;新增保存的映射&ndash;&gt;-->
+    <!--<insert id="save" parameterType="account">-->
+    <!--insert into account(name,money) values(#{name},#{money})-->
+    <!--</insert>-->
+    <!--<insert id="add" parameterType="checkItem">
+        INSERT INTO t_checkitem(code ,name ,sex ,age ,price ,type ,remark ,attention) values(#{id} ,#{code} ,#{name} ,#{sex} ,#{age} ,#{price} ,#{type} ,#{remark} ,#{attention})
+    </insert>-->
+
+
+    <insert id="add" parameterType="checkgroup">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_checkgroup(code ,name ,helpCode ,sex ,remark ,attention) VALUES (#{code}, #{name}, #{helpCode}, #{sex}, #{remark}, #{attention})
+    </insert>
+
+    <insert id="setCheckGroupAndCheckItem" parameterType="hashmap">
+        INSERT INTO t_checkgroup_checkitem(checkgroup_id,checkitem_id) VALUES(#{checkgroup_id},#{checkitem_id})
+    </insert>
+
+    <!--分页查询-->
+    <select id="findPage" parameterType="string" resultType="checkgroup">
+        SELECT * from t_checkgroup
+        <if test="value != null and value.length>0">
+            WHERE code = #{VALUE } OR name LIKE concat('%',#{VALUE},'%') OR helpcode = #{value}
+        </if>
+    </select>
+
+    <select id="findCheckGroupById" parameterType="int" resultType="checkgroup">
+        SELECT * FROM t_checkgroup WHERE id = #{id}
+    </select>
+
+    <select id="findCheckitemByCheckGroupId" parameterType="int" resultType="int">
+        SELECT checkitem_id FROM t_checkgroup_checkitem WHERE checkgroup_id = #{id}
+    </select>
+
+    <update id="edit" parameterType="checkgroup">
+        UPDATE t_checkgroup
+        <set>
+            <if test="code!=null and code.length>0">
+                code=#{code},
+            </if>
+            <if test="name!=null and name.length>0">
+                name=#{name},
+            </if>
+            <if test="helpCode!=null and helpCode.length>0">
+                helpCode=#{helpCode},
+            </if>
+            <if test="sex!=null and sex.length>0">
+                sex=#{sex},
+            </if>
+            <if test="remark!=null and remark.length>0">
+                remark=#{remark},
+            </if>
+            <if test="attention!=null and attention.length>0">
+                attention=#{attention},
+            </if>
+            <if test="checkItems!=null and checkItems.length>0">
+                checkItems=#{checkItems}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteCheckGroupAndItemById" parameterType="int">
+        DELETE FROM t_checkgroup_checkitem WHERE checkgroup_id = #{id}
+    </delete>
+    <delete id="deleteCheckGroupById" parameterType="int">
+        DELETE FROM t_checkgroup WHERE id = #{id}
+    </delete>
+    <select id="findAll" resultType="checkgroup">
+        SELECT * FROM t_checkgroup
+    </select>
+    <resultMap id="findAllBySetmealIdMap" type="checkgroup">
+        <id column="id" property="id"></id>
+        <result column="code" property="code"></result>
+        <result column="name" property="name"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <collection property="checkItems" column="id" select="com.itheima.job.dao.CheckItemDao.findCheckItemsByGroupId"></collection>
+    </resultMap>
+    <select id="findAllBySetmealId" resultMap="findAllBySetmealIdMap">
+        SELECT * FROM t_checkgroup where id in (select checkgroup_id from t_setmeal_checkgroup where setmeal_id=#{id})
+    </select>
+</mapper>

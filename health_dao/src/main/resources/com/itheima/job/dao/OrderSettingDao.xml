@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.job.dao.OrderSettingDao">
+    <!--&lt;!&ndash;查询所有的映射&ndash;&gt;-->
+    <!--<select id="findAll" resultType="account">-->
+    <!--select * from account-->
+    <!--</select>-->
+    <!--&lt;!&ndash;新增保存的映射&ndash;&gt;-->
+    <!--<insert id="save" parameterType="account">-->
+    <!--insert into account(name,money) values(#{name},#{money})-->
+    <!--</insert>-->
+    <select id="findCountByOrderSettingDate" parameterType="date" resultType="int">
+        SELECT COUNT(*) FROM t_ordersetting WHERE orderDate = #{DATE}
+    </select>
+
+    <update id="editOrderSettingByFile" parameterType="ordersetting">
+        UPDATE t_ordersetting SET number=#{number} WHERE orderDate=#{orderDate}
+    </update>
+
+    <insert id="addByFile" parameterType="ordersetting">
+        INSERT INTO t_ordersetting(orderDate ,number ,reservations) VALUES(#{orderDate},#{number},#{reservations})
+    </insert>
+
+    <select id="findOrdersettingByate" parameterType="string" resultType="ordersetting">
+        SELECT * FROM t_ordersetting where orderDate like concat(#{value},'%')
+    </select>
+
+    <select id="findOrdersettingBydate" parameterType="string" resultType="ordersetting">
+        SELECT * FROM t_ordersetting where orderDate=#{date}
+    </select>
+
+    <update id="editReservationsByOrderDate" parameterType="string">
+        UPDATE t_ordersetting SET reservations = reservations+1 where orderDate=#{date}
+    </update>
+</mapper>

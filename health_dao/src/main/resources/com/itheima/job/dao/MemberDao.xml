@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.job.dao.MemberDao">
+    <!--&lt;!&ndash;查询所有的映射&ndash;&gt;-->
+    <!--<select id="findAll" resultType="account">-->
+    <!--select * from account-->
+    <!--</select>-->
+    <!--&lt;!&ndash;新增保存的映射&ndash;&gt;-->
+    <!--<insert id="save" parameterType="account">-->
+    <!--insert into account(name,money) values(#{name},#{money})-->
+    <!--</insert>-->
+    <select id="findMemberByTelephone" parameterType="string" resultType="member">
+        SELECT * FROM t_member WHERE fileNumber = #{filenumber}
+    </select>
+
+    <insert id="add" parameterType="member">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT into t_member(name ,sex ,idCard ,phoneNumber ,regTime) VALUES (#{name},#{sex},#{idCard},#{phoneNumber},#{regTime})
+    </insert>
+
+    <!--根据月份产找党外你日期前的会员总数量-->
+    <select id="findMemberCountByMonth" parameterType="String" resultType="int">
+        select count(id) from t_member where regTime &lt;= #{value}
+    </select>
+
+    <!--获取当前日期后注册的会员-->
+    <select id="findTodayNewMember" parameterType="string" resultType="int">
+        select count(*) from t_member where regTime = #{date}
+    </select>
+
+    <!--获取所有会员的数量-->
+    <select id="findTotalMember"  resultType="int">
+        select count(*) from t_member
+    </select>
+
+    <!--获取本周/本月新增会员数量-->
+    <select id="findNewMemerAfterDate" parameterType="string"  resultType="int">
+        select count(*) from t_member where regTime &gt;= #{date}
+    </select>
+</mapper>
